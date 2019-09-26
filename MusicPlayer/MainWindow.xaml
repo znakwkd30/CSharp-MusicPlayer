@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MusicPlayer"
         mc:Ignorable="d" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
-        Title="MainWindow" Height="800" Width="460" AllowsTransparency="True" WindowStyle="None">
+        Title="MainWindow" Height="420" Width="460" AllowsTransparency="True" WindowStyle="None">
     <!--<Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" CanExecute="Open_CanExecute" Executed="Open_Executed" />
         <CommandBinding Command="MediaCommands.Play" CanExecute="Play_CanExecute" Executed="Play_Executed" />
@@ -110,6 +110,6 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        <WebBrowser x:Name="web" Grid.Row="5" Width="460" Height="330"/>
+        <WebBrowser x:Name="web" Grid.Row="5" Width="1" Height="1"/>
     </Grid>
 </Window>

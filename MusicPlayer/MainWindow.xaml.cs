@@ -170,25 +170,29 @@ namespace MusicPlayer
 
         async void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            YoutubeData youtubeData = new YoutubeData();
+            //YoutubeData youtubeData = new YoutubeData();
 
             var youtube = new YouTubeService(new BaseClientService.Initializer()
             {
-                ApiKey = "AIzaSyDpuLkP3P6Ux0MKfIEI2kelzjS0Rr3QVJw", // Api Key 지정
+                ApiKey = "AIzaSyCdYzrgvTCowhvOxk9Yd92RdM5o857e8io", // Api Key 지정
                 ApplicationName = "CSharp Music",
             });
 
             var request = youtube.Search.List("snippet");
             request.Q = txtSearch.Text;
-            request.MaxResults = 25;
+            request.MaxResults = 10;
 
             var result = await request.ExecuteAsync();
 
-            int j = searchList.Items.Count;
-            for (int i = 0; i < j; i++)
-            {
-                searchList.Items.RemoveAt(0);
-            }
+            //int j = searchList.Items.Count;
+            //for (int i = 0; i < j; i++)
+            //{
+            //    searchList.Items.RemoveAt(0);
+            //}
+
+            searchList.Items.Clear();
+
+
             foreach (var item in result.Items)
             {
                 if(item.Id.Kind == "youtube#video" || item.Id.Kind == "youtube#playlist")
@@ -201,6 +205,8 @@ namespace MusicPlayer
 
         private void SearchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (searchList.SelectedItem == null) return;
+
             string selectItem = searchList.SelectedItem.ToString();
             string item = selectItem.ToString();
         }
@@ -212,7 +218,7 @@ namespace MusicPlayer
             {
                 var youtube = new YouTubeService(new BaseClientService.Initializer()
                 {
-                    ApiKey = "AIzaSyDpuLkP3P6Ux0MKfIEI2kelzjS0Rr3QVJw", // Api Key 지정
+                    ApiKey = "AIzaSyCdYzrgvTCowhvOxk9Yd92RdM5o857e8io", // Api Key 지정
                     ApplicationName = "CSharp Music",
                 });
 
