@@ -230,7 +230,7 @@ namespace MusicPlayer
 
                 foreach (var item in result.Items)
                 {
-                    if (item.Id.Kind == "youtube#video" || item.Id.Kind == "youtube#playlist")
+                    if (item.Id.Kind == "youtube#video" /*|| item.Id.Kind == "youtube#playlist"*/)
                     {
                         // YouTube 비디오 Play를 위한 URL 생성
                         videoId = item.Id.VideoId;
@@ -251,6 +251,12 @@ namespace MusicPlayer
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.DragMove();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            string youtubeUrl = "http://youtube.com";
+            web.Source = new Uri(youtubeUrl);
         }
     }
 }

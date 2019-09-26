@@ -91,10 +91,15 @@
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+            </Grid.ColumnDefinitions>
             <TextBox x:Name="txtSearch" Grid.Row="0"/>
             <Button Width="30" Height="30" Grid.Row="0" 
                     HorizontalAlignment="Right" VerticalAlignment="Top" Content="Search"
                     Click="btnSearch_Click"/>
+            <Button Width="30" Height="30" Grid.Row="0"
+                    HorizontalAlignment="Right" Margin="0 0 30 0"
+                    Content="Stop" Click="Button_Click"></Button>
             <ListView x:Name="searchList" Grid.Row="1" 
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                       SelectionChanged="SearchList_SelectionChanged" 
