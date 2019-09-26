@@ -3,6 +3,7 @@ using Google.Apis.YouTube.v3;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -169,27 +170,32 @@ namespace MusicPlayer
 
         async void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            
+            YoutubeData youtubeData = new YoutubeData();
+
             var youtube = new YouTubeService(new BaseClientService.Initializer()
             {
                 ApiKey = "AIzaSyDpuLkP3P6Ux0MKfIEI2kelzjS0Rr3QVJw", // Api Key 지정
                 ApplicationName = "CSharp Music",
             });
+
             var request = youtube.Search.List("snippet");
             request.Q = txtSearch.Text;
             request.MaxResults = 25;
 
             var result = await request.ExecuteAsync();
 
+            int j = searchList.Items.Count;
+            for (int i = 0; i < j; i++)
+            {
+                searchList.Items.RemoveAt(0);
+            }
             foreach (var item in result.Items)
             {
                 if(item.Id.Kind == "youtube#video" || item.Id.Kind == "youtube#playlist")
                 {
-                    //App.youtubeDataSources.youtubeDataLoad(item.Id.PlaylistId.ToString(), item.Snippet.Title);
-                    searchList.Items.Add(/*item.Id.PlaylistId.ToString(), */item.Snippet.Title);
+                    searchList.Items.Add(item.Snippet.Title);
                 }
             }
-            //searchList.ItemsSource = App.youtubeDataSources.youtubeDatas;
             searchList.Items.Refresh();
         }
 
@@ -197,10 +203,48 @@ namespace MusicPlayer
         {
             string selectItem = searchList.SelectedItem.ToString();
             string item = selectItem.ToString();
-            Console.WriteLine(item);
-            string url = "http://www.youtube.com/watch?v=6eEZ7DJMzuk";
-            Uri myUri = new Uri(url.ToString(), UriKind.RelativeOrAbsolute);
-            App.uris.Add(myUri);
+        }
+
+        async private void SearchList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var videoId = "";
+            if (searchList.SelectedItems.Count > 0)
+            {
+                var youtube = new YouTubeService(new BaseClientService.Initializer()
+                {
+                    ApiKey = "AIzaSyDpuLkP3P6Ux0MKfIEI2kelzjS0Rr3QVJw", // Api Key 지정
+                    ApplicationName = "CSharp Music",
+                });
+
+                var request = youtube.Search.List("snippet");
+                request.Q = searchList.SelectedItem.ToString();
+                request.MaxResults = 5;
+
+                var result = await request.ExecuteAsync();
+
+                foreach (var item in result.Items)
+                {
+                    if (item.Id.Kind == "youtube#video" || item.Id.Kind == "youtube#playlist")
+                    {
+                        // YouTube 비디오 Play를 위한 URL 생성
+                        videoId = item.Id.VideoId;
+                    }
+                }
+
+                string youtubeUrl = "http://youtube.com/watch?v=" + videoId;
+                web.Source = new Uri(youtubeUrl);
+                // 디폴트 브라우져에서 실행
+                //Process.Start(youtubeUrl);
+            }
+        }
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.DragMove();
         }
     }
 }

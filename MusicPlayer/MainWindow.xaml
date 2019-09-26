@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MusicPlayer"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="330" Width="460">
+        mc:Ignorable="d" MouseLeftButtonDown="Grid_MouseLeftButtonDown"
+        Title="MainWindow" Height="800" Width="460" AllowsTransparency="True" WindowStyle="None">
     <!--<Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" CanExecute="Open_CanExecute" Executed="Open_Executed" />
         <CommandBinding Command="MediaCommands.Play" CanExecute="Play_CanExecute" Executed="Play_Executed" />
@@ -14,13 +14,17 @@
     </Window.CommandBindings>-->
     <Grid MouseWheel="Grid_MouseWheel">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="10" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="100"/>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="70" />
+            <RowDefinition Height="30" />
+            <RowDefinition Height="200" />
+            <RowDefinition Height="150"/>
+            <RowDefinition Height="330"/>
         </Grid.RowDefinitions>
-        <ToolBar Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10,0">
+        <Grid Grid.Row="0" Background="White">
+            
+        </Grid>
+        <ToolBar Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,-13,0" Width="473" Grid.ColumnSpan="2">
             <Separator />
             <Button Click="PlayButton">
                 <Image Source="/Assets/Plays.png" Width="50" />
@@ -43,9 +47,10 @@
             <Button Click="shuffleMusic">
                 <Image Source="/Assets/shuffle.png" Width="50" />
             </Button>
+            <Button Content="X" Width="50" Height="50" Click="Button_Click_1">
+            </Button>
+            <MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="None" Grid.ColumnSpan="2" />
         </ToolBar>
-
-        <MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="None" Grid.ColumnSpan="2" />
 
         <StatusBar Grid.Row="2" Grid.ColumnSpan="2">
             <StatusBar.ItemsPanel>
@@ -81,7 +86,7 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Grid Grid.Row="4">
+        <Grid Grid.Row="4" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="70"/>
@@ -92,7 +97,10 @@
                     Click="btnSearch_Click"/>
             <ListView x:Name="searchList" Grid.Row="1" 
                       ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                      SelectionChanged="SearchList_SelectionChanged">
+                      SelectionChanged="SearchList_SelectionChanged" 
+                      IsSynchronizedWithCurrentItem="False" 
+                      AutomationProperties.IsOffscreenBehavior="FromClip"
+                      MouseDoubleClick="SearchList_MouseDoubleClick">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
@@ -102,5 +110,6 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
+        <WebBrowser x:Name="web" Grid.Row="5" Width="460" Height="330"/>
     </Grid>
 </Window>

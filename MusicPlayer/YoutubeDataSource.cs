@@ -14,7 +14,7 @@ namespace MusicPlayer
         {
             youtubeDatas = new List<YoutubeData>()
             {
-                new YoutubeData() { playlistId=plId , title=mainTitle }
+                new YoutubeData() { videoId=plId , title=mainTitle }
             };
         }
     }

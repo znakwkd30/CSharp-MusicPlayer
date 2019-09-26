@@ -8,7 +8,7 @@ namespace MusicPlayer
 {
     public class YoutubeData
     {
-        public string playlistId { get; set; }
+        public string videoId { get; set; }
         public string title { get; set; }
     }
 }
