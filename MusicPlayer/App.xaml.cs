@@ -14,5 +14,7 @@ namespace MusicPlayer
     public partial class App : Application
     {
         public static List<Uri> uris = new List<Uri>();
+        public static MusicSource musicSource = new MusicSource();
+        public static YoutubeDataSource youtubeDataSources = new YoutubeDataSource();
     }
 }

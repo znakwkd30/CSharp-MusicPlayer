@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using Google.Apis.Services;
+using Google.Apis.YouTube.v3;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +31,8 @@ namespace MusicPlayer
         public MainWindow()
         {
             InitializeComponent();
-            Load();
+            App.musicSource.Load();
+            musicList.ItemsSource = App.musicSource.musics;
             this.mePlayer.MediaEnded += mePlayer_MediaEnded;
             DispatcherTimer timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromSeconds(1);
@@ -37,25 +40,10 @@ namespace MusicPlayer
             timer.Start();
         }
 
-        private void Load()
-        {
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\bungee.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\trueshow.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\cheerup.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\feelspecial.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\lost.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\ugotit.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\pretty.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\dama.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\dula.mp3"));
-            App.uris.Add(new Uri("C:\\Users\\kl\\source\\repos\\MusicPlayer\\MusicPlayer\\music\\umpahumpah.mp3"));
-        }
-
         private void PlayButton(object sender, RoutedEventArgs e)
         {
             mePlayer.Source = App.uris[idx];
             mePlayer.Play();
-            idx++;
         }
 
         private void PauseButton(object sender, RoutedEventArgs e)
@@ -70,6 +58,15 @@ namespace MusicPlayer
 
         void mePlayer_MediaEnded(object sender, RoutedEventArgs e)
         {
+            if(idx >= App.uris.Count - 1)
+            {
+                idx = 0;
+                mePlayer.Source = App.uris[idx];
+                mePlayer.Play();
+                return;
+            }
+
+            idx++;
             mePlayer.Source = App.uris[idx];
             mePlayer.Play();
         }
@@ -93,12 +90,35 @@ namespace MusicPlayer
         }
         private void preMusic(object sender, RoutedEventArgs e)
         {
-            if (idx.Equals(0)) return;
+            if (idx <= 0)
+            {
+                idx = App.uris.Count - 1;
+                mePlayer.Source = App.uris[idx];
+                mePlayer.Play();
+                return;
+            }
 
             mePlayer.Stop();
             idx--;
             mePlayer.Source = App.uris[idx];
             mePlayer.Play();
+        }
+
+        private void replayMusic(object sender, RoutedEventArgs e)
+        {
+            if (idx.Equals(0)) return;
+
+            idx--;
+            mePlayer.Source = App.uris[idx];
+        }
+
+        private void shuffleMusic(object sender, RoutedEventArgs e)
+        {
+            Random random = new Random();
+            idx = random.Next(0, App.uris.Count);
+            mePlayer.Source = App.uris[idx];
+            mePlayer.Play();
+            return;
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -132,5 +152,55 @@ namespace MusicPlayer
             mePlayer.Volume += (e.Delta > 0) ? 0.1 : -0.1;
         }
 
+        private void MusicList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selectName = ((Music)(musicList.SelectedItem)).Name;
+
+            foreach(Music music in App.musicSource.musics)
+            {
+                if (music.Name.Equals(selectName))
+                {
+                    idx = music.index - 1;
+                    mePlayer.Source = music.uri;
+                    mePlayer.Play();
+                }
+            }
+        }
+
+        async void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            
+            var youtube = new YouTubeService(new BaseClientService.Initializer()
+            {
+                ApiKey = "AIzaSyDpuLkP3P6Ux0MKfIEI2kelzjS0Rr3QVJw", // Api Key 지정
+                ApplicationName = "CSharp Music",
+            });
+            var request = youtube.Search.List("snippet");
+            request.Q = txtSearch.Text;
+            request.MaxResults = 25;
+
+            var result = await request.ExecuteAsync();
+
+            foreach (var item in result.Items)
+            {
+                if(item.Id.Kind == "youtube#video" || item.Id.Kind == "youtube#playlist")
+                {
+                    //App.youtubeDataSources.youtubeDataLoad(item.Id.PlaylistId.ToString(), item.Snippet.Title);
+                    searchList.Items.Add(/*item.Id.PlaylistId.ToString(), */item.Snippet.Title);
+                }
+            }
+            //searchList.ItemsSource = App.youtubeDataSources.youtubeDatas;
+            searchList.Items.Refresh();
+        }
+
+        private void SearchList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string selectItem = searchList.SelectedItem.ToString();
+            string item = selectItem.ToString();
+            Console.WriteLine(item);
+            string url = "http://www.youtube.com/watch?v=6eEZ7DJMzuk";
+            Uri myUri = new Uri(url.ToString(), UriKind.RelativeOrAbsolute);
+            App.uris.Add(myUri);
+        }
     }
 }

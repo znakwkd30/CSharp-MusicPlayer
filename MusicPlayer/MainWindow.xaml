@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MusicPlayer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="130" Width="350">
+        Title="MainWindow" Height="330" Width="460">
     <!--<Window.CommandBindings>
         <CommandBinding Command="ApplicationCommands.Open" CanExecute="Open_CanExecute" Executed="Open_Executed" />
         <CommandBinding Command="MediaCommands.Play" CanExecute="Play_CanExecute" Executed="Play_Executed" />
@@ -17,8 +17,10 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="10" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="100"/>
         </Grid.RowDefinitions>
-        <ToolBar Grid.Row="0" HorizontalAlignment="Center">
+        <ToolBar Grid.Row="0" HorizontalAlignment="Center" Grid.ColumnSpan="2" Margin="10,0">
             <Separator />
             <Button Click="PlayButton">
                 <Image Source="/Assets/Plays.png" Width="50" />
@@ -35,11 +37,17 @@
             <Button Click="nextMusic">
                 <Image Source="/Assets/next.png" Width="50" />
             </Button>
+            <Button Click="replayMusic">
+                <Image Source="/Assets/replay.png" Width="50" />
+            </Button>
+            <Button Click="shuffleMusic">
+                <Image Source="/Assets/shuffle.png" Width="50" />
+            </Button>
         </ToolBar>
 
-        <MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="None" />
+        <MediaElement Name="mePlayer" Grid.Row="1" LoadedBehavior="Manual" Stretch="None" Grid.ColumnSpan="2" />
 
-        <StatusBar Grid.Row="2">
+        <StatusBar Grid.Row="2" Grid.ColumnSpan="2">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid>
@@ -61,5 +69,38 @@
                 <ProgressBar Name="pbVolume" Width="50" Height="12" Maximum="1" Value="{Binding ElementName=mePlayer, Path=Volume}" />
             </StatusBarItem>
         </StatusBar>
+
+        <ListView Grid.Row="3" x:Name="musicList" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  SelectionChanged="MusicList_SelectionChanged" Grid.ColumnSpan="2">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="{Binding Name}" FontFamily="궁서체" Foreground="Black" FontSize="24"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Grid Grid.Row="4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="70"/>
+            </Grid.RowDefinitions>
+            <TextBox x:Name="txtSearch" Grid.Row="0"/>
+            <Button Width="30" Height="30" Grid.Row="0" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Content="Search"
+                    Click="btnSearch_Click"/>
+            <ListView x:Name="searchList" Grid.Row="1" 
+                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                      SelectionChanged="SearchList_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel>
+                            <TextBlock Text="{Binding}" FontSize="10"></TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
     </Grid>
 </Window>
