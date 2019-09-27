@@ -28,6 +28,7 @@ namespace MusicPlayer
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool webBrowserOn = true;
         private bool userIsDraggingSlider = false;
         private int idx = 0;
         private ChromiumWebBrowser browser;
@@ -35,6 +36,7 @@ namespace MusicPlayer
         public MainWindow()
         {
             InitializeComponent();
+            InitBrowser();
             App.musicSource.Load();
             musicList.ItemsSource = App.musicSource.musics;
             this.mePlayer.MediaEnded += mePlayer_MediaEnded;
@@ -242,22 +244,30 @@ namespace MusicPlayer
 
                 Console.WriteLine(videoId);
                 string youtubeUrl = "http://youtube.com/watch?v=" + videoId;
-                //web.Source = new Uri(youtubeUrl);
-                InitBrowser(youtubeUrl);
+                web.Source = new Uri(youtubeUrl);
                 // 디폴트 브라우져에서 실행
                 //Process.Start(youtubeUrl);
             }
         }
 
-        public void InitBrowser(string url)
+        public void InitBrowser()
         {
-            CefSettings settings = new CefSettings();
-            settings.CefCommandLineArgs.Add("disable-usb-keyboard-detect", "1");
-            Cef.Initialize(settings);
+            //if (webBrowserOn)
+            //{
+            //    webBrowserOn = false;
+                CefSettings settings = new CefSettings();
+                settings.CefCommandLineArgs.Add("disable-usb-keyboard-detect", "1");
+                Cef.Initialize(settings);
 
-            browser = new ChromiumWebBrowser();
-            browser.Address = url;
-            web.Children.Add(browser);
+                browser = new ChromiumWebBrowser();
+                browser.Address = "http://youtube.com";
+                youtube.Children.Add(browser);
+            //    return;
+            //}
+
+            //web.Children.Remove(browser);
+            //webBrowserOn = true;
+            //InitBrowser(url);
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -273,8 +283,7 @@ namespace MusicPlayer
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string youtubeUrl = "http://youtube.com";
-            //web.Source = new Uri(youtubeUrl);
-            InitBrowser(youtubeUrl);
+            web.Source = new Uri(youtubeUrl);
         }
     }
 }

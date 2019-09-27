@@ -116,6 +116,7 @@
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        <Grid x:Name="web" Grid.Row="5" Width="460" Height="350"/>
+        <WebBrowser x:Name="web"></WebBrowser>
+        <Grid x:Name="youtube" Grid.Row="5" Width="460" Height="350"/>
     </Grid>
 </Window>
