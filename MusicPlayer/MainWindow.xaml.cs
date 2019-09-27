@@ -1,4 +1,6 @@
-﻿using Google.Apis.Services;
+﻿using CefSharp;
+using CefSharp.Wpf;
+using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Microsoft.Win32;
 using System;
@@ -28,6 +30,7 @@ namespace MusicPlayer
     {
         private bool userIsDraggingSlider = false;
         private int idx = 0;
+        private ChromiumWebBrowser browser;
 
         public MainWindow()
         {
@@ -237,12 +240,26 @@ namespace MusicPlayer
                     }
                 }
 
+                Console.WriteLine(videoId);
                 string youtubeUrl = "http://youtube.com/watch?v=" + videoId;
-                web.Source = new Uri(youtubeUrl);
+                //web.Source = new Uri(youtubeUrl);
+                InitBrowser(youtubeUrl);
                 // 디폴트 브라우져에서 실행
                 //Process.Start(youtubeUrl);
             }
         }
+
+        public void InitBrowser(string url)
+        {
+            CefSettings settings = new CefSettings();
+            settings.CefCommandLineArgs.Add("disable-usb-keyboard-detect", "1");
+            Cef.Initialize(settings);
+
+            browser = new ChromiumWebBrowser();
+            browser.Address = url;
+            web.Children.Add(browser);
+        }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
             this.Close();
@@ -256,7 +273,8 @@ namespace MusicPlayer
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             string youtubeUrl = "http://youtube.com";
-            web.Source = new Uri(youtubeUrl);
+            //web.Source = new Uri(youtubeUrl);
+            InitBrowser(youtubeUrl);
         }
     }
 }
