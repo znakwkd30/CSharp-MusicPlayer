@@ -17,15 +17,18 @@
             <RowDefinition Height="20" />
             <RowDefinition Height="70" />
             <RowDefinition Height="30" />
-            <RowDefinition Height="200" />
-            <RowDefinition Height="150"/>
-            <RowDefinition Height="330"/>
+            <RowDefinition Height="0" />
+            <RowDefinition Height="250"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Background="White">
             
         </Grid>
-        <ToolBar Grid.Row="1" HorizontalAlignment="Center" Margin="0,0,-13,0" Width="473" Grid.ColumnSpan="2">
+        <ToolBar Grid.Row="1" Width="300" Grid.ColumnSpan="2">
             <Separator />
+            <Button Click="folderOpen">
+                <Image Source="/Assets/folder.png" Width="45" />
+            </Button>
             <Button Click="PlayButton">
                 <Image Source="/Assets/Plays.png" Width="50" />
             </Button>
@@ -34,18 +37,6 @@
             </Button>
             <Button Click="StopButton">
                 <Image Source="/Assets/stop.png" Width="50" />
-            </Button>
-            <Button Click="preMusic">
-                <Image Source="/Assets/pre.png" Width="50" />
-            </Button>
-            <Button Click="nextMusic">
-                <Image Source="/Assets/next.png" Width="50" />
-            </Button>
-            <Button Click="replayMusic">
-                <Image Source="/Assets/replay.png" Width="50" />
-            </Button>
-            <Button Click="shuffleMusic">
-                <Image Source="/Assets/shuffle.png" Width="50" />
             </Button>
             <Button Content="X" Width="50" Height="50" Click="Button_Click_1">
             </Button>
@@ -89,7 +80,7 @@
         <Grid Grid.Row="4" Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
-                <RowDefinition Height="70"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
             </Grid.ColumnDefinitions>
@@ -110,7 +101,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <TextBlock Text="{Binding}" FontSize="10"></TextBlock>
+                            <TextBlock Text="{Binding Name}" FontSize="10"></TextBlock>
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>

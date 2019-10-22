@@ -5,6 +5,7 @@ using Google.Apis.YouTube.v3;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -28,7 +29,6 @@ namespace MusicPlayer
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool webBrowserOn = true;
         private bool userIsDraggingSlider = false;
         private int idx = 0;
         private ChromiumWebBrowser browser;
@@ -48,7 +48,6 @@ namespace MusicPlayer
 
         private void PlayButton(object sender, RoutedEventArgs e)
         {
-            mePlayer.Source = App.uris[idx];
             mePlayer.Play();
         }
 
@@ -76,55 +75,16 @@ namespace MusicPlayer
             mePlayer.Source = App.uris[idx];
             mePlayer.Play();
         }
-
-        private void nextMusic(object sender, RoutedEventArgs e)
+        private void folderOpen(object sender, RoutedEventArgs e)
         {
-            if (idx.Equals(0)) return;
-
-            if (App.uris.Count.Equals(idx))
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Media files (*.mp3;*.mpg;*.mpeg)|*.mp3;*.mpg;*.mpeg|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
             {
-                idx = 0;
-                mePlayer.Source = App.uris[idx];
+                mePlayer.Source = new Uri(openFileDialog.FileName);
                 mePlayer.Play();
-                return;
             }
 
-            mePlayer.Stop();
-            mePlayer.Source = App.uris[idx];
-            mePlayer.Play();
-            idx++;
-        }
-        private void preMusic(object sender, RoutedEventArgs e)
-        {
-            if (idx <= 0)
-            {
-                idx = App.uris.Count - 1;
-                mePlayer.Source = App.uris[idx];
-                mePlayer.Play();
-                return;
-            }
-
-            mePlayer.Stop();
-            idx--;
-            mePlayer.Source = App.uris[idx];
-            mePlayer.Play();
-        }
-
-        private void replayMusic(object sender, RoutedEventArgs e)
-        {
-            if (idx.Equals(0)) return;
-
-            idx--;
-            mePlayer.Source = App.uris[idx];
-        }
-
-        private void shuffleMusic(object sender, RoutedEventArgs e)
-        {
-            Random random = new Random();
-            idx = random.Next(0, App.uris.Count);
-            mePlayer.Source = App.uris[idx];
-            mePlayer.Play();
-            return;
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -158,24 +118,8 @@ namespace MusicPlayer
             mePlayer.Volume += (e.Delta > 0) ? 0.1 : -0.1;
         }
 
-        private void MusicList_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            string selectName = ((Music)(musicList.SelectedItem)).Name;
-
-            foreach(Music music in App.musicSource.musics)
-            {
-                if (music.Name.Equals(selectName))
-                {
-                    idx = music.index - 1;
-                    mePlayer.Source = music.uri;
-                    mePlayer.Play();
-                }
-            }
-        }
-
         async void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            //YoutubeData youtubeData = new YoutubeData();
 
             var youtube = new YouTubeService(new BaseClientService.Initializer()
             {
@@ -189,12 +133,6 @@ namespace MusicPlayer
 
             var result = await request.ExecuteAsync();
 
-            //int j = searchList.Items.Count;
-            //for (int i = 0; i < j; i++)
-            //{
-            //    searchList.Items.RemoveAt(0);
-            //}
-
             searchList.Items.Clear();
 
 
@@ -202,7 +140,14 @@ namespace MusicPlayer
             {
                 if(item.Id.Kind == "youtube#video" || item.Id.Kind == "youtube#playlist")
                 {
-                    searchList.Items.Add(item.Snippet.Title);
+                    //searchList.Items.Add(item.Snippet.Title);
+                    Debug.WriteLine(result);
+
+                    Music music = new Music();
+                    music.Name = item.Snippet.Title;
+                    string youtubeUrl = "http://youtube.com/watch?v=" + item.Id.VideoId;
+                    music.uri = new Uri(youtubeUrl, UriKind.Absolute);
+                    searchList.Items.Add(music);
                 }
             }
             searchList.Items.Refresh();
@@ -218,6 +163,9 @@ namespace MusicPlayer
 
         async private void SearchList_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            Music music = (searchList.SelectedItem as Music);
+            
+            
             var videoId = "";
             if (searchList.SelectedItems.Count > 0)
             {
@@ -239,10 +187,11 @@ namespace MusicPlayer
                     {
                         // YouTube 비디오 Play를 위한 URL 생성
                         videoId = item.Id.VideoId;
+                        Debug.WriteLine(item.Id.VideoId);
                     }
                 }
 
-                Console.WriteLine(videoId);
+                //Console.WriteLine(videoId);
                 string youtubeUrl = "http://youtube.com/watch?v=" + videoId;
                 web.Source = new Uri(youtubeUrl);
                 // 디폴트 브라우져에서 실행
@@ -250,24 +199,9 @@ namespace MusicPlayer
             }
         }
 
-        public void InitBrowser()
+        private void ThisIsCalledWhenPropertyIsChanged(object sender, EventArgs e)
         {
-            //if (webBrowserOn)
-            //{
-            //    webBrowserOn = false;
-                CefSettings settings = new CefSettings();
-                settings.CefCommandLineArgs.Add("disable-usb-keyboard-detect", "1");
-                Cef.Initialize(settings);
-
-                browser = new ChromiumWebBrowser();
-                browser.Address = "http://youtube.com";
-                youtube.Children.Add(browser);
-            //    return;
-            //}
-
-            //web.Children.Remove(browser);
-            //webBrowserOn = true;
-            //InitBrowser(url);
+            throw new NotImplementedException();
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -278,6 +212,17 @@ namespace MusicPlayer
         private void Grid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             this.DragMove();
+        }
+
+        public void InitBrowser()
+        {
+            CefSettings settings = new CefSettings();
+            settings.CefCommandLineArgs.Add("disable-usb-keyboard-detect", "1");
+            Cef.Initialize(settings);
+
+            browser = new ChromiumWebBrowser();
+            browser.Address = "http://youtube.com";
+            youtube.Children.Add(browser);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
